@@ -10,7 +10,7 @@ export default function ChatBox({ text, handleChange }) {
       onChange={childHandleChange}
       type="text"
       placeholder="Type here"
-      className="input input-bordered w-full max-w-md font-mono"
+      className="input input-bordered w-[65%] max-w-md font-mono"
     />
   );
 }

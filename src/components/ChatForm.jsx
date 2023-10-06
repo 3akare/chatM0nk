@@ -11,7 +11,7 @@ export default function ChatForm({ text, handleClick, handleChange }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bottom-8 w-full fixed flex flex-row items-center justify-center gap-4"
+      className="bottom-8 w-full fixed flex flex-row items-center justify-center gap-2"
     >
         <ChatBox text={text} handleChange={handleChange} />
         <SendButton text={text} />
