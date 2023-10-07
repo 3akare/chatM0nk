@@ -11,6 +11,7 @@ import {
 export default function ChatPage() {
   const [text, setText] = useState("");
   const [array, setArray] = useState([]);
+  const [userObj, setUSerObject] = useState({});
   const chatContainerRef = useRef();
 
   const handleChange = (x) => {
@@ -23,7 +24,12 @@ export default function ChatPage() {
   };
 
   const handleClick = () => {
-    addMessage({ text: text, createdAt: serverTimestamp() });
+    addMessage({
+      text: text,
+      createdAt: serverTimestamp(),
+      userId: userObj.userId,
+      photoURL: userObj.displayImg,
+    });
     setArray((oldArray) => {
       return [...oldArray, text];
     });
@@ -34,7 +40,7 @@ export default function ChatPage() {
     const q = query(collectionRef, orderBy("createdAt", "asc"));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const updatedMessages = snapshot.docs.map((doc) => {
-        return doc.data().text;
+        return [doc.data().text, doc.data().userId, doc.data().photoURL];
       });
       setArray(updatedMessages);
     });
@@ -50,6 +56,12 @@ export default function ChatPage() {
     scrollToBottom();
   }, [array]);
 
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("chatMonkUser"));
+    setUSerObject((old) => {
+      return { ...old, userId: user.uid, displayImg: user.photoURL };
+    });
+  }, []);
   return (
     <>
       <div className="w-[100%] h-[95vh] relative p-0 m-0 font-mono">
@@ -67,10 +79,26 @@ export default function ChatPage() {
           style={{ maxHeight: "78vh" }}
         >
           {array.map((item, index) => (
-            <div key={index} className="chat chat-end">
-              <div className="chat-bubble chat-bubble-primary min-h-fit">
-                {item}
+            <div
+              key={index}
+              className={`chat ${
+                item[1] === userObj.userId ? "chat-end" : "chat-start"
+              }`}
+            >
+              <div className="chat-image avatar">
+                <div className="w-10 rounded-full">
+                  <img src={item[2]} />
+                </div>
               </div>
+              <div className="chat-header">{userObj.userName}</div>
+              <div
+                className={`chat-bubble min-h-fit ${
+                  item[1] === userObj.userId ? "chat-bubble-primary" : ""
+                }`}
+              >
+                {item[0]}
+              </div>
+              <div className="chat-footer opacity-50">Delivered</div>
             </div>
           ))}
         </div>
